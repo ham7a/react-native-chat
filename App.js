@@ -36,20 +36,21 @@ export default function App() {
     const [messages, setMessages] = useState([])
 
     useEffect(() => {
-        readUser()
         const unsubscribe = chatsRef.onSnapshot((querySnapshot) => {
             const messagesFirestore = querySnapshot
-                .docChanges()
-                .filter(({ type }) => type === 'added')
-                .map(({ doc }) => {
-                    const message = doc.data()
-                    //createdAt is firebase.firestore.Timestamp instance
-                    //https://firebase.google.com/docs/reference/js/firebase.firestore.Timestamp
-                    return { ...message, createdAt: message.createdAt.toDate() }
-                })
-                .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+            .docChanges()
+            .filter(({ type }) => type === 'added')
+            .map(({ doc }) => {
+                const message = doc.data()
+                //createdAt is firebase.firestore.Timestamp instance
+                //https://firebase.google.com/docs/reference/js/firebase.firestore.Timestamp
+                return { ...message, createdAt: message.createdAt.toDate() }
+            })
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
             appendMessages(messagesFirestore)
         })
+        readUser()
+        // Cleanup
         return () => unsubscribe()
     }, [])
 
